@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "./bootstrap.css";
 import "./App.css";
+import { axiosWithAuth } from "./axioswithauth";
+
 
 const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -27,23 +29,38 @@ class App extends Component {
     super(props);
 
     this.state = {
-      firstName: null,
-      lastName: null,
-      email: null,
+      // firstName: null,
+      // lastName: null,
+      username: null,
       password: null,
       formErrors: {
-        firstName: "",
-        lastName: "",
-        email: "",
+        // firstName: "",
+        // lastName: "",
+        username: "",
         password: ""
       }
     };
   }
 
+
+
   handleSubmit = e => {
     e.preventDefault();
 
     if (formValid(this.state)) {
+
+      axiosWithAuth()
+      .post("https://african-marketplace-backend.herokuapp.com/api/login", {
+        username: this.state.username,
+        password: this.state.password
+      })
+      .then(res => {
+        localStorage.setItem("token", res.data.token);
+        // props.history.push("/YOUR-ROUTE");
+      })
+      .catch(err => {
+        console.log({ err: "There was an error. Try again." });
+      });
       console.log(`
         --SUBMITTING--
         First Name: ${this.state.firstName}
@@ -92,25 +109,25 @@ class App extends Component {
     return (
       <div className="wrapper">
         <div className="form-wrapper">
-          <h1>Create Account</h1>
+          <h1>Login</h1>
           <form onSubmit={this.handleSubmit} noValidate>
-          <div className="form-row">
+          {/* <div className="form-row">
                   <div className="col">
                     <input type="text" className={formErrors.firstName.length > 0 ? "form-control error" : "form-control"} placeholder="First name" type="text"
                 name="firstName"
                 noValidate
                 onChange={this.handleChange}/>
                   </div>
-                </div>
+                </div> */}
            
-                <div className="form-row">
+                {/* <div className="form-row">
                   <div className="col">
                     <input type="text" className={formErrors.lastName.length > 0 ? "form-control error" : "form-control"} placeholder="Last name" type="text"
                 name="lastName"
                 noValidate
                 onChange={this.handleChange}/>
                   </div>
-                </div>
+                </div> */}
 
                 {/* <div className="form-row">
                   <div className="col">
@@ -121,18 +138,18 @@ class App extends Component {
                   </div>
                 </div> */}
       
-            <div className="email">
-              <label htmlFor="email">Email</label>
+            <div className="username">
+              <label htmlFor="username">Username</label>
               <input
-                className={formErrors.email.length > 0 ? "error" : null}
-                placeholder="Email"
-                type="email"
-                name="email"
+                className={formErrors.username.length > 0 ? "error" : null}
+                placeholder="User Name"
+                type="username"
+                name="username"
                 noValidate
                 onChange={this.handleChange}
               />
-              {formErrors.email.length > 0 && (
-                <span className="errorMessage">{formErrors.email}</span>
+              {formErrors.username.length > 0 && (
+                <span className="errorMessage">{formErrors.username}</span>
               )}
             </div>
 
@@ -151,9 +168,12 @@ class App extends Component {
                 <span className="errorMessage">{formErrors.password}</span>
               )}
             </div>
-            <div className="createAccount">
-              <button type="submit">Create Account</button>
-              <small>Already Have an Account?</small>
+
+           
+
+            <div className="login">
+              <button type="submit" onClick={this.handleSubmit}>login</button>
+              {/* <small>login </small> */}
             </div>
           </form>
         </div>
